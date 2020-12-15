@@ -43,7 +43,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/users/user/**").hasAnyRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/users/user/**").hasAnyRole("ADMIN")
                 .antMatchers("/roles/**", "/products/**").hasAnyRole("ADMIN")
-                .antMatchers("/oauth/revoke-token", "/logout").authenticated()
+                .antMatchers("/users/myinfo", "/oauth/revoke-token", "/logout").authenticated()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());
@@ -53,5 +53,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
         //Get H2 Console working. Disable frames for security.
         http.headers().frameOptions().disable();
+
+        //Disable Spring Boot default logout functionality
+        http.logout().disable();
     }
 }

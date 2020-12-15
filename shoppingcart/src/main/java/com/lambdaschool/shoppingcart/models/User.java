@@ -205,17 +205,17 @@ public class User
         this.roles = roles;
     }
 
-    //method to provide a list of authorities and roles that a user has
+    //Enables Spring Security to get Authorities. Ties Roles table with Spring Security.
+    //Nobody should access this so use @JsonIgnore so Jackson doesn't see this method.
     @JsonIgnore
-    public List<SimpleGrantedAuthority> getAuthority()
-    {
+    public List<SimpleGrantedAuthority> getAuthority() {
         List<SimpleGrantedAuthority> rtnList = new ArrayList<>();
 
-        for (UserRoles r : this.roles)
-        {
-            String myRole = "ROLE_" + r.getRole()
-                    .getName()
-                    .toUpperCase();
+        //Tie our Roles to the Spring Security List
+        //For each role assigned to this user convert to SimpleGrantedAuthority
+        //manipulate name of role, must start with name ROLE_ and add the rolename HAS to be in uppercase
+        for (UserRoles r : this.roles) {
+            String myRole = "ROLE_" + r.getRole().getName().toUpperCase();
             rtnList.add(new SimpleGrantedAuthority(myRole));
         }
 

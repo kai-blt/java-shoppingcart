@@ -1,51 +1,40 @@
 package com.lambdaschool.shoppingcart.services;
 
-import com.lambdaschool.shoppingcart.models.User;
+
+import com.lambdaschool.shoppingcart.exceptions.ResourceNotFoundException;
 import com.lambdaschool.shoppingcart.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-
-// make sure the user that is in the import be the one from this application, not core security
-// import org.springframework.security.core.userdetails.User;
-
-/**
- * This implements User Details Service that allows us to authenticate a user.
- */
+//Tie in Spring Security User to our User Model
+//Since this updates data makes transactional
 @Service(value = "securityUserService")
-public class SecurityUserServiceImpl
-        implements UserDetailsService
-{
-    /**
-     * Ties this implementation to the User Repository so we can find a user in the database.
-     */
+public class SecurityUserServiceImpl implements UserDetailsService {
+    //Bring in User Repository
     @Autowired
     private UserRepository userrepos;
 
-    /**
-     * Verifies that the user is correct and if so creates the authenticated user
-     *
-     * @param s The user name we are look for
-     * @return a security user detail that is now an authenticated user
-     * @throws EntityNotFoundException if the user name is not found
-     */
+    //Tie in Spring Security User to our User Model
+    //Since this updates data makes transactional
     @Transactional
     @Override
-    public UserDetails loadUserByUsername(String s)
-            throws
-            EntityNotFoundException
-    {
-        User user = userrepos.findByUsername(s.toLowerCase());
-        if (user == null)
-        {
-            throw new EntityNotFoundException("Invalid username or password.");
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        //Get user from our User Repository
+       com.lambdaschool.shoppingcart.models.User user = userrepos.findByUsername(s.toLowerCase());
+
+        //If user can't be found throw error
+        //Stating invalid username or password so that you don't give away too much info to hackers
+        if (user == null) {
+            throw new ResourceNotFoundException("Invalid username or password");
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(),
-                user.getAuthority());
+
+        //Create new Spring Security User import org.springframework.security.core.userdetails.User;
+        //To be used in the Token Store
+        return new User(user.getUsername(), user.getPassword(), user.getAuthority());
     }
 }

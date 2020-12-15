@@ -73,6 +73,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         // localhost:2019/oauth/token <- typical endpoint
         // localhost:2019/login <- custom login endpoint
         // Map custom login endpoint
-        endpoints.pathMapping("/oauth/token", "/login");
+        endpoints.pathMapping("/oauth/token", "/logout");
     }
 }

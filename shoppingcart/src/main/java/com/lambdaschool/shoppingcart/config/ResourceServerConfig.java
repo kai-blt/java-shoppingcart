@@ -1,6 +1,7 @@
 package com.lambdaschool.shoppingcart.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -37,7 +38,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                         "/swagger-ui.html",
                         "/v2/api-docs",
                         "/webjars/").permitAll()
-                .antMatchers("/users/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/users/user").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/users/user/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/users/user/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH, "/users/user/**").hasAnyRole("ADMIN")
+                .antMatchers("/roles/**", "/products/**").hasAnyRole("ADMIN")
+                .antMatchers("/oauth/revoke-token", "/logout").authenticated()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());

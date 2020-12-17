@@ -27,10 +27,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     //Users can auth in many ways. In this version we'll use username/password.
     static final String GRANT_TYPE_PASSWORD = "password";
 
-    //Client can also send an api key authorization code base64 combination of client/secret
+    //Client can also send an api key authorization code base64 combination of clien_tid/client_secret
     static final String AUTHORIZATION_CODE = "authorization_code";
 
     //OATH2 has scopes to further refine how user roles are defined.
+    //Used to limit what a user can do with the application as a whole
     static final String SCOPE_READ = "read";
     static final String SCOPE_WRITE = "write";
     static final String TRUST = "trust";
@@ -39,19 +40,22 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     //-1 is always valid. 10 minutes would be 600 (10 min x 60s)
     static final int ACCESS_TOKEN_VALIDITY_SECONDS = -1;
 
-    //Bring in Token Store
+    //Bring in Token Store. Configured in SecurityConfig, but managed in AuthorizationServerConfig
     @Autowired
     private TokenStore tokenStore;
 
-    //Bring in Authentication Manager
+    //Bring in Authentication Manager - authenticates a user and gives ability to assign acess token
+    //Managed by AuthorizationServer
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    //Bring in password encoder
+    //Bring in password encoder. AuthorizationServer needs to encrypt client secret so we tell it
+    //what encoder to use
     @Autowired
     private PasswordEncoder encoder;
 
-    //Connect up all of our configurations for authorization in SecurityConfig
+    //Connect up all of our configurations for Client Details Service for our application
+    //authorization in SecurityConfig
     @Override
     public void configure(ClientDetailsServiceConfigurer configurer) throws Exception {
         configurer.inMemory()
@@ -64,6 +68,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 
     //Configure which endpoints are handled through Spring Security
+    //Connects our endpoints to our custom authentication server and token store.
     //Use our token store and manager
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {

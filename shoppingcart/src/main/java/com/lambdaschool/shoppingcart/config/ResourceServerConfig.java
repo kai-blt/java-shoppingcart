@@ -25,6 +25,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     }
 
     //By default everyone has access to everything
+    //our antMatchers control which roles of users have access to which endpoints
+    //we must order our antmatchers from most restrictive to least restrictive.
+    //So restrict at method level before restricting at endpoint level.
     //Set up our security for who has access to what endpoints
     //Use antmatchers to list what we want to grant access to
     //hasAnyRole states which role can access that specific endpoint
